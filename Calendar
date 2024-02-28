@@ -1,0 +1,80 @@
+<template>
+  <div class="full">
+    <div class="head">
+      <YearMonth ref="yearMonth" @year-month-change="yearMonthChange" />
+      <div class="weeks">
+        <div>日</div>
+        <div>一</div>
+        <div>二</div>
+        <div>三</div>
+        <div>四</div>
+        <div>五</div>
+        <div>六</div>
+      </div>
+    </div>
+    <Days ref="days" :year-month-str="yearMonthStr" @day-active="dayActive" />
+  </div>
+</template>
+<script>
+import moment from 'moment';
+import Days from './Days';
+import YearMonth from './YearMonth';
+export default {
+  components: {
+    Days,
+    YearMonth
+  },
+  data() {
+    return {
+      yearMonthStr: '',
+      search: {
+        endTime: '',
+        plateNo: '',
+        startTime: ''
+      }
+    };
+  },
+  methods: {
+    setDefaultDate(dateStr) {
+      if (dateStr) {
+        this.$nextTick(() => {
+          this.$refs.yearMonth.setDefaultYearMonth(dateStr);
+          this.$refs.days.todayStr = dateStr;
+          this.$refs.days.activeDay = dateStr;
+        });
+        this.$emit('input', dateStr);
+        // this.$emit('change');
+      }
+    },
+    dayActive(item) {
+      this.$emit('input', item.dateStr);
+      // this.$emit('change');
+    },
+    yearMonthChange(yearMonthStr) {
+      this.yearMonthStr = yearMonthStr;
+      this.search.startTime = moment(yearMonthStr)
+        .startOf('month')
+        .format('YYYY-MM-DD');
+      this.search.endTime = moment(yearMonthStr)
+        .endOf('month')
+        .format('YYYY-MM-DD');
+    }
+  }
+};
+</script>
+<style lang="scss" scoped>
+.head {
+  position: relative;
+  height: 68px;
+  .weeks {
+    display: flex;
+    line-height: 36px;
+    background: #dce6f5;
+    & > div {
+      width: 14.285714%;
+      color: #8b96a5;
+      text-align: center;
+    }
+  }
+}
+</style>
